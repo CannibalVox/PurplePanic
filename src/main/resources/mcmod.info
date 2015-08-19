@@ -1,0 +1,16 @@
+[
+{
+  "modid": "purplepanic",
+  "name": "Purple Panic",
+  "description": "Some last minute hacks for Blightfall.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["CanVox"],
+  "credits": "Technic Pack (Syndicate LLC)",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
