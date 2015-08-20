@@ -23,7 +23,7 @@ import java.io.IOException;
 @Mod(modid = PurplePanicMod.MODID, version = PurplePanicMod.VERSION, name = PurplePanicMod.NAME)
 public class PurplePanicMod {
     public static final String MODID = "purplepanic";
-    public static final String VERSION = "1.0";
+    public static final String VERSION = "1.0.1";
     public static final String NAME = "Purple Panic";
 
     static int genX = -972;
@@ -53,12 +53,8 @@ public class PurplePanicMod {
         if (testFile.exists())
             return;
 
-        ICommandManager icommandmanager = minecraftserver.getCommandManager();
-        int value = icommandmanager.executeCommand(minecraftserver, "/schematicaGenerate " + schematic + " " + Integer.toString(genX) + " " + Integer.toString(genY) + " "+ Integer.toString(genZ));
-        if (value < 1) {
-            FMLLog.getLogger().error("Schematica failed to generate the cheat area- code "+value);
-            return;
-        }
+        (new PanicPatch(-972, 157, -1022, "CheatHub")).execute(minecraftserver);
+        (new PanicPatch(555, 241, 2077, "Thyrork")).execute(minecraftserver);
 
         try {
             FileUtils.writeStringToFile(testFile, "done");
