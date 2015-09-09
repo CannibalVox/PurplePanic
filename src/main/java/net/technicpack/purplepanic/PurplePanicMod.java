@@ -23,7 +23,7 @@ import java.io.IOException;
 @Mod(modid = PurplePanicMod.MODID, version = PurplePanicMod.VERSION, name = PurplePanicMod.NAME)
 public class PurplePanicMod {
     public static final String MODID = "purplepanic";
-    public static final String VERSION = "1.0.1";
+    public static final String VERSION = "1.0.2";
     public static final String NAME = "Purple Panic";
 
     static int genX = -972;
@@ -55,6 +55,7 @@ public class PurplePanicMod {
 
         (new PanicPatch(-972, 157, -1022, "CheatHub")).execute(minecraftserver);
         (new PanicPatch(555, 241, 2077, "Thyrork")).execute(minecraftserver);
+        (new PanicPatch(1013, 119, 2009, "KeyHolder")).execute(minecraftserver);
 
         try {
             FileUtils.writeStringToFile(testFile, "done");
