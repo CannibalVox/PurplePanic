@@ -56,6 +56,7 @@ public class PurplePanicMod {
         (new PanicPatch(-972, 157, -1022, "CheatHub")).execute(minecraftserver);
         (new PanicPatch(555, 241, 2077, "Thyrork")).execute(minecraftserver);
         (new PanicPatch(1013, 119, 2009, "KeyHolder")).execute(minecraftserver);
+        (new PanicPatch(-984, 153, -1017, "FixScanner")).execute(minecraftserver);
 
         try {
             FileUtils.writeStringToFile(testFile, "done");
