@@ -23,7 +23,7 @@ import java.io.IOException;
 @Mod(modid = PurplePanicMod.MODID, version = PurplePanicMod.VERSION, name = PurplePanicMod.NAME)
 public class PurplePanicMod {
     public static final String MODID = "purplepanic";
-    public static final String VERSION = "1.0.3";
+    public static final String VERSION = "1.0.4";
     public static final String NAME = "Purple Panic";
 
     static int genX = -972;
@@ -50,16 +50,39 @@ public class PurplePanicMod {
         FMLLog.info("Purple Panic Load World");
 
         File testFile = new File(world.getSaveHandler().getWorldDirectory(), "purplepanic.dat");
-        if (testFile.exists())
-            return;
 
-        (new PanicPatch(-972, 157, -1022, "CheatHub")).execute(minecraftserver);
-        (new PanicPatch(555, 241, 2077, "Thyrork")).execute(minecraftserver);
-        (new PanicPatch(1013, 119, 2009, "KeyHolder")).execute(minecraftserver);
-        (new PanicPatch(-984, 153, -1017, "FixScanner")).execute(minecraftserver);
+        int currentVersion = 0;
+        if (testFile.exists()) {
+            String versionStr = "0";
+            try {
+                versionStr = FileUtils.readFileToString(testFile);
+            } catch (IOException ex) {
+                //File has problem, that means it's probably version 0
+            }
+
+            if (versionStr.equals("done"))
+                currentVersion = 1;
+            else {
+                try {
+                    currentVersion = Integer.parseInt(versionStr);
+                } catch (NumberFormatException ex) {
+                    //Version # has problem, that means it's probably version 0
+                }
+            }
+        }
+
+        if (currentVersion < 1) {
+            (new PanicPatch(-972, 157, -1022, "CheatHub")).execute(minecraftserver);
+            (new PanicPatch(555, 241, 2077, "Thyrork")).execute(minecraftserver);
+        }
+
+        if (currentVersion < 2) {
+            (new PanicPatch(1013, 119, 2009, "KeyHolder")).execute(minecraftserver);
+            (new PanicPatch(-984, 153, -1017, "FixScanner")).execute(minecraftserver);
+        }
 
         try {
-            FileUtils.writeStringToFile(testFile, "done");
+            FileUtils.writeStringToFile(testFile, "2");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
