@@ -1,5 +1,6 @@
 package net.technicpack.purplepanic;
 
+import com.google.gson.*;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.common.Mod;
@@ -19,11 +20,12 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 
 @Mod(modid = PurplePanicMod.MODID, version = PurplePanicMod.VERSION, name = PurplePanicMod.NAME)
 public class PurplePanicMod {
     public static final String MODID = "purplepanic";
-    public static final String VERSION = "1.0.4";
+    public static final String VERSION = "1.0.5";
     public static final String NAME = "Purple Panic";
 
     static int genX = -972;
@@ -81,11 +83,76 @@ public class PurplePanicMod {
             (new PanicPatch(-984, 153, -1017, "FixScanner")).execute(minecraftserver);
         }
 
+        if (currentVersion < 3) {
+            FMLLog.info("Scanning customnpc's folder for evidence of game completion.");
+            File worldDir = world.getSaveHandler().getWorldDirectory();
+
+            if (worldDir.exists()) {
+                File customNpcsDir = new File(worldDir, "customnpcs");
+                if (customNpcsDir.exists()) {
+                    File playerDataDir = new File(customNpcsDir, "playerdata");
+
+                    if (playerDataDir.exists()) {
+                        int dialogStatus = enumeratePlayerDir(playerDataDir);
+
+                        switch (dialogStatus) {
+                            case 43:
+                                (new PanicPatch(829, 80, 802, "Victory")).execute(minecraftserver);
+                                break;
+                            case 44:
+                                (new PanicPatch(1295, 80, 1524, "Victory")).execute(minecraftserver);
+                                break;
+                            case 45:
+                                (new PanicPatch(564, 90, 1181, "Victory")).execute(minecraftserver);
+                                break;
+                        }
+                    }
+                }
+            }
+
+            FMLLog.info("Finished scanning.");
+        }
+
         try {
-            FileUtils.writeStringToFile(testFile, "2");
+            FileUtils.writeStringToFile(testFile, "3");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
         FMLLog.info("PurplePanic done loading");
+    }
+
+    private int enumeratePlayerDir(File playerDir) {
+        Iterator<File> files = FileUtils.iterateFiles(playerDir, new String[] {""}, true);
+        Gson gson = new Gson();
+
+        while (files.hasNext()) {
+            File file = files.next();
+
+            try {
+                String fileContents = FileUtils.readFileToString(file);
+                JsonObject object = gson.fromJson(fileContents, JsonObject.class);
+
+                if (object.has("DialogData")) {
+                    JsonArray array = object.getAsJsonArray("DialogData");
+
+                    for (JsonElement element : array) {
+                        if (element.isJsonObject()) {
+                            JsonObject dialog = element.getAsJsonObject();
+                            if (dialog.has("Dialog")) {
+                                int dialogNumber = dialog.get("Dialog").getAsInt();
+                                if (dialogNumber >= 43 && dialogNumber <= 45) {
+                                    FMLLog.info("Found completed game.");
+                                    return dialogNumber;
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return 0;
     }
 }
