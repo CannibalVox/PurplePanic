@@ -25,7 +25,7 @@ import java.util.Iterator;
 @Mod(modid = PurplePanicMod.MODID, version = PurplePanicMod.VERSION, name = PurplePanicMod.NAME)
 public class PurplePanicMod {
     public static final String MODID = "purplepanic";
-    public static final String VERSION = "1.0.5";
+    public static final String VERSION = "1.0.6";
     public static final String NAME = "Purple Panic";
 
     static int genX = -972;
@@ -106,8 +106,14 @@ public class PurplePanicMod {
                                 (new PanicPatch(564, 90, 1181, "Victory")).execute(minecraftserver);
                                 break;
                         }
+                    } else {
+                        FMLLog.info("Could not find "+playerDataDir.getAbsolutePath());
                     }
+                } else {
+                    FMLLog.info("Could not find "+customNpcsDir.getAbsolutePath());
                 }
+            } else {
+                FMLLog.info("Could not find "+worldDir.getAbsolutePath());
             }
 
             FMLLog.info("Finished scanning.");
@@ -122,8 +128,10 @@ public class PurplePanicMod {
     }
 
     private int enumeratePlayerDir(File playerDir) {
-        Iterator<File> files = FileUtils.iterateFiles(playerDir, new String[] {""}, true);
+        Iterator<File> files = FileUtils.iterateFiles(playerDir, new String[] {"json"}, true);
         Gson gson = new Gson();
+
+        FMLLog.info("Scanning "+playerDir.getAbsolutePath());
 
         while (files.hasNext()) {
             File file = files.next();
@@ -131,6 +139,7 @@ public class PurplePanicMod {
             try {
                 String fileContents = FileUtils.readFileToString(file);
                 JsonObject object = gson.fromJson(fileContents, JsonObject.class);
+                FMLLog.info("Scanning "+object.get("PlayerName").getAsString());
 
                 if (object.has("DialogData")) {
                     JsonArray array = object.getAsJsonArray("DialogData");
